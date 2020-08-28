@@ -7,7 +7,8 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 
 let app = express();
 
-app.set('views', './views');
+app.use(express.static(__dirname + '/../views'));
+app.set('views', path.join(__dirname + '/../views'));
 app.engine('hbs', exphbs({ extname: 'hbs', handlebars: allowInsecurePrototypeAccess(Handlebars) }));
 
 app.set('view engine', 'hbs');

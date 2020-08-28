@@ -14,6 +14,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.0",
+    "compile-run": "^2.3.2",
     "compilex": "^0.7.4",
     "connect-ensure-login": "^0.1.1",
     "connect-flash": "^0.1.1",

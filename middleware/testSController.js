@@ -1,5 +1,4 @@
 require('../models/Form');
-require('../routes/student');
 
 const MongoClient = require('mongodb');
 const multer = require('multer');
@@ -53,25 +52,18 @@ module.exports.paginatedResults = async (req, res, next) => {
   const page = parseInt(req.query.page)
   const limit = 1
 
-  const startIndex = (page - 1) * limit
-  const endIndex = page * limit
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
 
-  const results = {}
-
-  if (endIndex < questions) {
-      results.next = {
-          page: page + 1,
-          limit: limit
-      }
-  }
-  
-  if (startIndex > 0) {
-      results.previous = {
-          page: page - 1,
-          limit: limit
-      }
+  if(page !== req.app.get('curpage')) {
+    req.app.set('passed', 0);
+    req.app.set('score', 0);
+    req.app.set('language', '');
+    req.app.set('code', '');
   }
 
+  let lang = req.app.get('language');
+  let code = req.app.get('code');
   try {
     collection.find({'filename': {$regex: `^${Title}_Q`}}).limit(limit).skip(startIndex).toArray(function(err, docs){
       if(err){
@@ -98,7 +90,9 @@ module.exports.paginatedResults = async (req, res, next) => {
             }
             //Display the chunks using the data URI format
             let finalFile = 'data:' + docs[0].contentType + ';base64,' + fileData.join('');
-            res.render('test.hbs', {title: Title, fileurl: finalFile, ouput: output, pages: page, layout: false});
+            req.app.set('qid', docs[0]._id);
+            req.app.set('curpage', page);
+            res.render('test.hbs', {title: Title, fileurl: finalFile, pages: page, layout: false});
         });
       } 
     });

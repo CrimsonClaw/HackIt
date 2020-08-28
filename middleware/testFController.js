@@ -1,14 +1,15 @@
 require('../routes/faculty');
 
-const express = require('express');
 const mongoose = require('mongoose');
 const test = mongoose.model('Testdetail');
 
 module.exports.create = (req,res) => {
     var c = new test();
-    c.title= req.body.title;
-    c.duration=req.body.duration;
-    c.question=req.body.question;
+    c.title = req.body.title;
+    c.dept = req.body.dept;
+    c.duration = req.body.duration;
+    c.question = req.body.question;
+    c.marks = req.body.marks;
     c.save((err,doc)=>{
     if (!err)
         res.redirect(`/faculty/${req.body.title}`);

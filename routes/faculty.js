@@ -1,4 +1,3 @@
-require('../app.js');
 require('../models/Form');
 
 const express = require('express');
@@ -10,15 +9,18 @@ const exphbs = require('express-handlebars');
 const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
 
+const User = mongoose.model('Users');
 const test = mongoose.model('Testdetail');
 
 var app = express();
-const User = mongoose.model('Users');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.engine('hbs', exphbs({ extname: 'hbs', defaultLayout: 'facultyLayout', layoutsDir: 'views/layouts/', handlebars: allowInsecurePrototypeAccess(Handlebars) }));
+app.use(express.static(__dirname + '/../views'));
+app.set('views', path.join(__dirname + '/../views'));
+app.engine('hbs', exphbs({ extname: 'hbs', defaultLayout: 'userLayout', layoutsDir: 'views/layouts/', handlebars: allowInsecurePrototypeAccess(Handlebars) }));
 app.set('view engine', 'hbs');
 
 app.get('/', ensureAuthenticated, (req, res) => {
@@ -47,7 +49,7 @@ app.post('/profile/update', ensureAuthenticated, sf.update);
 
 app.get('/createTest', ensureAuthenticated, (req, res) => {
     User.find({email: req.user.email}, (err,docs) => {
-        res.render('createTest.hbs', {user: docs[0], layout: false});
+        res.render('faculty/createTest.hbs', {user: docs[0]});
     });
 });
 
@@ -75,5 +77,12 @@ app.post('/uploadTest/upload', ensureAuthenticated, uploads.uploadFile);
 app.get('/:title/viewFiles', ensureAuthenticated, uploads.viewTest);
 
 app.post('/del/:_id', ensureAuthenticated, uploads.delete);
+
+app.get('/view/:filename', ensureAuthenticated, uploads.testcase);
+
+var testCase = require('../middleware/testCaseController');
+app.post('/addCase', testCase.create);
+
+app.get('/delCase/:_id', testCase.delete);
 
 module.exports = app;

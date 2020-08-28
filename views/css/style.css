@@ -59,7 +59,7 @@
   #top-left::before {
     content: "";
     border-color: transparent #003366 transparent transparent;
-    left: 500px;
+    left: 443px;
     border-width: 32px;
     position: absolute;
     border-style: solid;
@@ -120,7 +120,7 @@
   #top-right::before {
     content: "";
     border-color: transparent white transparent transparent;
-    left: -63px;
+    left: -64px;
     border-width: 32px;
     position: absolute;
     border-style: solid;
@@ -183,7 +183,7 @@
   #student-nav::after {
     content: "";
     border-color: transparent white transparent transparent;
-    right: 50px;
+    right: 37px;
     border-width: 27px;
     position: absolute;
     border-style: solid;

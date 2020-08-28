@@ -5,42 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/style11.css" type="text/css" />
+    <link rel="stylesheet" href="./css/style22.css" type="text/css" />
+    <script src="./js/js11.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .split {
+            height: 95%;
+            width: 50%;
+            position: fixed;
+            z-index: 1;
+            top: 10%;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            right: 0;
+        }
+
+        .topnav {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div>
-                <iframe src="{{fileurl}}" frameborder="0" width="50%" height="50%"></iframe>
-            </div>
-            <div>
-                    <h1>Online IDE</h1>
-                    <form id="myform" name="myform" method="post" action="/student/compile">
-                    <h3>Code</h3>
-                    <textarea rows="13" cols="100" id="code" name="code" ></textarea> 
-                    <br/>
-                    <h3>Input</h3>
-                    <textarea rows="10" cols="100" id="input" name="input" ></textarea> 
-                    <br/>
-                    Language : <select name="lang">
-                    <option value="C">C</option>
-                    <option value="Java">Java</option>  
-                    <option value="Python">Python</option> 
-                    </select>
-                    Compile With Input : 
-                    <input type="radio" name="inputRadio" id="inputRadio" value="true"/>yes
-                    <input type="radio" name="inputRadio" id="inputRadio" value="false"/>No
-                    <br />
-                    <input type="submit" value="submit"  name="submit" />
-                    </form>
-            </div>
-            <div>
-                {{output}}
-            </div>
-        </div>
-        <div class="row">
-            <a href="/student/{{title}}?page={{math pages '-' 1}}">Prev</a>
-            <a href="/student/{{title}}?page={{math pages '+' 1}}">Next</a>
-        </div>
+<body onload="prepareTheme('Java Program')">
+    <div class="split left">
+        <iframe src="{{fileurl}}" frameborder="0" scrolling="yes"                           
+            style="overflow: hidden; height: 100%;" height="100%" width="100%"
+            align="left">
+        </iframe> 
     </div>
+    <div class="split right">
+        <form method="post" action="/student/compile" id="myForm" name="myForm">
+            <div class="form-field">
+            <label for="codeSelection" style="color:blue;font-size: 20px;">Select Language</label>
+            <select name="language" id="language" class="input">
+                <option value="Java">Java</option>
+                <option value="Python">Python</option>
+                <option value="C">C</option>
+                <option value="C++">C++</option>
+            </select>
+
+            <label for="codeArea" style="color:blue;font-size: 20px;">Code</label>
+            <textarea class="input" id="codeArea" name="codeArea" rows="14" cols="30" autofocus
+                onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}"></textarea>
+
+            <label for="code" style="color:blue;font-size: 20px;">Inputs</label>
+            <textarea class="input" id="inputArea" name="inputArea" rows="4" cols="30"
+                style="font-weight:bolder;font-size:20px;color:black;border:1px solid black;"
+                placeholder="Input must be separated by Line"></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn" type="submit">Submit</button>
+            </div>
+        </form>
+        <textarea id="main" readonly></textarea>
+    </div>
+    <div class="topnav">
+        <a href="/student/{{title}}?page={{math pages '-' 1}}">Prev</a>
+        <a href="/student/{{title}}?page={{math pages '+' 1}}">Next</a>
+    </div>
+    <script
+    src="https://code.jquery.com/jquery-2.0.3.min.js"
+    integrity="sha256-sTy1mJ4I/LAjFCCdEB4RAvPSmRCb3CU7YqodohyeOLo="
+    crossorigin="anonymous"></script>
+    <script src="./js/ajax.js"></script>
+    <script>
+        var editor;
+        function prepareTheme(defaultCodeText) {
+            editor = CodeMirror.fromTextArea(document.getElementById("codeArea"),
+                {
+                lineNumbers: true,
+                styleActiveLine: true,
+                matchBrackets: true
+                });
+            var theme = "blackboard";
+            editor.setOption("theme", theme);
+        }
+    </script>
 </body>
 </html>

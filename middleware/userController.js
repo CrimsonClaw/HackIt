@@ -1,19 +1,15 @@
 const express = require('express');
-var router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model('Users');
 const test = mongoose.model('Testdetail');
 const bcrypt = require('bcryptjs');
-const flash = require('connect-flash');
 const passport = require('passport');
 const { role } = require('fs');
 const { loadavg } = require('os');
 const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
 
-const app = express();
-app.use(express.static(__dirname + '../views'));
-router.use(flash());
+var router = express.Router();
 
 // Login Page
 router.get('/home', ensureAuthenticated, (req, res) => {
@@ -143,17 +139,10 @@ function handleValidationError(err, body) {
 router.get('/:id', ensureAuthenticated, (req, res) => {
     User.findById(req.params.id, (err, doc) => {
         if (!err) {
-            if(req.flash('message')) {
-                res.render("admin/viewUser", {
-                    user: doc
-                });
-            }
-            else {
-                res.render("admin/addOrEdit", {
-                    viewTitle: "Update User",
-                    user: doc
-                });
-            }
+            res.render("admin/addOrEdit", {
+                viewTitle: "Update User",
+                user: doc
+            });
         }
     }); 
 });
@@ -161,8 +150,9 @@ router.get('/:id', ensureAuthenticated, (req, res) => {
 router.get('/view/:id', ensureAuthenticated, (req, res) => {
     User.findById(req.params.id, (err, doc) => {
         if (!err) {
-            req.flash('message', "View");
-            res.redirect(`/admin/${req.params.id}`);  
+            res.render("admin/viewUser", {
+                user: doc
+            }); 
         }
     }); 
 });

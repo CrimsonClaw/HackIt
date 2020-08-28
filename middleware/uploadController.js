@@ -1,4 +1,5 @@
 require('../models/Form');
+require('../models/TestCase');
 
 const MongoClient = require('mongodb');
 const multer = require('multer');
@@ -6,6 +7,8 @@ const GridFsStorage = require('multer-gridfs-storage');
 const mongoose = require('mongoose');
 const app = require('../routes/uploads');
 
+const test = mongoose.model('Testdetail');
+const testcase = mongoose.model('Testcase');
 const { data } = require('jquery');
 
 const url = "mongodb+srv://mongo:mongo@cluster0-4zn27.mongodb.net/test?retryWrites=true&w=majority";
@@ -33,7 +36,7 @@ let storage = new GridFsStorage({
   file: (req, file) => {
     return {
       bucketName: 'uploads',       
-      filename: Title + '_' + file.originalname
+      filename: file.originalname
     }
   }
 });
@@ -50,7 +53,8 @@ storage.on('connection', (db) => {
 
 module.exports.loadHome = (req, res) => {
   Title = req.params.title;
-  console.log(Title)
+  console.log(Title);
+
   MongoClient.connect(url, {useUnifiedTopology: true}, function(err, client){
     if(err){
         return res.render('tests/testCreate.hbs', {title: Title, message: 'MongoClient Connection error', error: err.errMsg, layout: 'upload.hbs'});
@@ -63,7 +67,7 @@ module.exports.loadHome = (req, res) => {
     collection.find({'filename': {$regex: `^${Title}_`}}).toArray((err, files) => {
       // Check if files
       if (!files || files.length === 0) {
-        res.render('tests/testCreate.hbs', { files: false, message: "Upload Files", layout: 'upload.hbs' });
+        res.render('tests/testCreate.hbs', { title: Title, files: false, message: "Upload Files", layout: 'upload.hbs' });
       } else {
         files.map(file => {
           if (
@@ -155,4 +159,54 @@ module.exports.delete = (req, res) => {
       res.redirect('back');
     });
   });
+};
+
+module.exports.testcase = (req, res) => {
+  MongoClient.connect(url, {useUnifiedTopology: true}, function(err, client){
+
+    if(err){
+        return res.render('upload.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
+    }
+    const db = client.db(dbName);
+    
+    const collection = db.collection('uploads.files');
+    const collectionChunks = db.collection('uploads.chunks');
+
+    try {
+      collection.find({filename: req.params.filename}).toArray(function(err, docs){
+        if(err){
+          return res.render('layouts/upload.hbs', {title: 'File error', message: 'Error finding file', error: err.errMsg, layout: false});
+        }
+        if(!docs || docs.length === 0){
+          return res.render('layouts/upload.hbs', {title: 'Download Error', message: 'No file found', layout: false});
+        }else{
+        //Retrieving the chunks from the db
+          collectionChunks.find({files_id : docs[0]._id}).sort({n: 1}).toArray(function(err, chunks){
+              if(err){
+              return res.render('layouts/upload.hbs', {title: 'Download Error', message: 'Error retrieving chunks', error: err.errmsg, layout: false});
+              }
+              if(!chunks || chunks.length === 0){
+              //No data found
+              return res.render('layouts/upload.hbs', {title: 'Download Error', message: 'No data found', layout: false});
+              }
+              //Append Chunks
+              let fileData = [];
+              for(let i=0; i<chunks.length;i++){
+              //This is in Binary JSON or BSON format, which is stored
+              //in fileData array in base64 endocoded string format
+              fileData.push(chunks[i].data.toString('base64'));
+              }
+              //Display the chunks using the data URI format
+              let finalFile = 'data:' + docs[0].contentType + ';base64,' + fileData.join('');
+              
+              testcase.find({questionid: docs[0]._id}).exec((err, tests) => {
+                res.render('tests/testCase.hbs', {fileurl: finalFile, testcase: tests, qid: docs[0]._id, layout: false});
+              });
+          });
+        } 
+      });
+      } catch (e) {
+        res.status(500).json({ message: e.message })
+      }
+    });
 };

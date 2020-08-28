@@ -1,6 +1,6 @@
 <div class="col-sm-2 col-md-2 col-lg-2 col-xl-2">
     <nav class="navbar navbar-expand-lg navbar-light flex-column">
-        <a class="navbar-brand" style="font-size: 20px;" href="/faculty">Home</a>
+        <a class="navbar-brand" style="font-size: 20px;" href="/student">Home</a>
         <button class="navbar-toggler"
                 type="button"
                 data-toggle="collapse"
@@ -18,23 +18,10 @@
                     id="student-nav">
                     <a class="nav-link text-white"
                         style="font-size: 23px;"
-                        href="/faculty/profile">
+                        href="/student/profile">
                         Profile
                         <span class="sr-only">(current)</span>
                     </a>
-                </li>
-                <li class="nav-item mt-md-2">
-                    <a class="nav-link"
-                        id="teacher-nav"
-                        style="font-size: 23px;"
-                        href="#">Test Results</a>
-                </li>
-                <li class="nav-item mt-md-2">
-                    <a class="nav-link"
-                        style="font-size: 23px;"
-                        href="/faculty/createTest"
-                        id="teacher-nav"
-                        >Create Test</a>
                 </li>
             </ul>
         </div>
@@ -42,7 +29,7 @@
 </div>
 <div class="container-fluid col-sm-8" id="view">
     <h3>{{message}}</h3>
-    <form action="profile/update" method="POST" autocomplete="off">
+    <form action="/student/update" method="POST" autocomplete="off">
 
         <input type="hidden" name="_id" value="{{user._id}}">
         <div class="form-group row">

@@ -1,4 +1,4 @@
-require('../app.js');
+require('../models/Form');
 
 const express = require('express');
 const path = require('path');
@@ -9,15 +9,19 @@ const exphbs = require('express-handlebars');
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
 
 const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
+const { compiler } = require('../middleware/compilerController');
+
 const User = mongoose.model('Users');
+const test = mongoose.model('Testdetail');
 
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-
-app.engine('hbs', exphbs({ extname: 'hbs', handlebars: allowInsecurePrototypeAccess(Handlebars), helpers:{
+app.use(express.static(__dirname + '/../views'));
+app.set('views', path.join(__dirname + '/../views'));
+app.engine('hbs', exphbs({ extname: 'hbs', defaultLayout: 'userLayout', layoutsDir: 'views/layouts/', handlebars: allowInsecurePrototypeAccess(Handlebars), helpers:{
     // Function to do basic mathematical operation in handlebar
     math: function(lvalue, operator, rvalue) {lvalue = parseFloat(lvalue);
         rvalue = parseFloat(rvalue);
@@ -33,16 +37,30 @@ app.engine('hbs', exphbs({ extname: 'hbs', handlebars: allowInsecurePrototypeAcc
 
 app.set('view engine', 'hbs');
 
-var test = require('../middleware/testSController');
+app.get('/profile', ensureAuthenticated, (req, res) => {
+    User.find({email: req.user.email}, (err, docs) => {
+        res.render('student/profile.hbs', {user: docs[0], message: req.flash('message')});
+    });
+});
 
-app.use('/viewTest',ensureAuthenticated, test.testAvail);
+var testC = require('../middleware/testSController');
 
-app.get('/:title',ensureAuthenticated, test.paginatedResults);
+app.use('/viewTest',ensureAuthenticated, testC.testAvail);
+
+app.get('/:title',ensureAuthenticated, testC.paginatedResults);
+
+app.post('/compile', compiler, (req, res) => {
+    let score = req.app.get('score');
+    let pass = req.app.get('passed');
+    res.send({score, pass});
+});
 
 app.get('/', ensureAuthenticated, (req, res) => {
     User.find({email: req.user.email}, (err,docs)=>{
         if(docs[0].role=='student' || docs[0].role=='admin'){
-            res.render('student.hbs', {user: docs[0],  message: req.flash('message'), layout: false});
+            test.find({'status': 'active'}).exec((err, tests) => {
+                res.render('student/home.hbs', {user: docs[0], test: tests, message: req.flash('message')});
+            });
         }
         else{
           res.redirect('/faculty');

@@ -1,5 +1,4 @@
 require('../models/db');
-require('../app.js');
 
 const express = require('express');
 const path = require('path');
@@ -17,7 +16,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-app.use(express.static(__dirname + '../views'));
+app.use(express.static(__dirname + '/../views'));
+app.set('views', path.join(__dirname + '/../views'));
 app.engine('hbs', exphbs({ extname: 'hbs', defaultLayout: 'mainLayout', layoutsDir: 'views/layouts/', handlebars: allowInsecurePrototypeAccess(Handlebars), helpers:{
     // Function to do basic mathematical operation in handlebar
     math: function(lvalue, operator, rvalue) {lvalue = parseFloat(lvalue);
