@@ -45,7 +45,7 @@ module.exports = {
 
                 for(let doc of testcases) {
                     await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
-                        if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
+                        if(JSON.parse(JSON.stringify(result['stdout'])) === JSON.parse(JSON.stringify(doc.expected))) {
                             passed++;
                             total += parseInt(doc.score);
                         }
