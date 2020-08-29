@@ -55,6 +55,9 @@ app.post('/compile', compiler, (req, res) => {
     res.send({score, pass});
 });
 
+var compilerC = require('../middleware/compilerController');
+app.post('/check', compilerC.check);
+
 app.get('/', ensureAuthenticated, (req, res) => {
     User.find({email: req.user.email}, (err,docs)=>{
         if(docs[0].role=='student' || docs[0].role=='admin'){

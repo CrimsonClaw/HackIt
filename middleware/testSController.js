@@ -42,7 +42,7 @@ module.exports.paginatedResults = async (req, res, next) => {
   MongoClient.connect(url, {useUnifiedTopology: true}, function(err, client){
 
   if(err){
-      return res.render('upload.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
+      return res.render('test.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
   }
   const db = client.db(dbName);
   
@@ -67,19 +67,19 @@ module.exports.paginatedResults = async (req, res, next) => {
   try {
     collection.find({'filename': {$regex: `^${Title}_Q`}}).limit(limit).skip(startIndex).toArray(function(err, docs){
       if(err){
-        return res.render('layouts/upload.hbs', {title: 'File error', message: 'Error finding file', error: err.errMsg, layout: false});
+        return res.render('test.hbs', {title: 'File error', message: 'Error finding file', error: err.errMsg, layout: false});
       }
       if(!docs || docs.length === 0){
-        return res.render('layouts/upload.hbs', {title: 'Download Error', message: 'No file found', layout: false});
+        return res.render('test.hbs', {title: 'Download Error', message: 'No file found', layout: false});
       }else{
       //Retrieving the chunks from the db
         collectionChunks.find({files_id : docs[0]._id}).sort({n: 1}).toArray(function(err, chunks){
             if(err){
-            return res.render('layouts/upload.hbs', {title: 'Download Error', message: 'Error retrieving chunks', error: err.errmsg, layout: false});
+            return res.render('test.hbs', {title: 'Download Error', message: 'Error retrieving chunks', error: err.errmsg, layout: false});
             }
             if(!chunks || chunks.length === 0){
             //No data found
-            return res.render('layouts/upload.hbs', {title: 'Download Error', message: 'No data found', layout: false});
+            return res.render('test.hbs', {title: 'Download Error', message: 'No data found', layout: false});
             }
             //Append Chunks
             let fileData = [];
@@ -106,7 +106,7 @@ module.exports.testAvail = async (req, res, next) => {
   MongoClient.connect(url, {useUnifiedTopology: true}, function(err, client){
 
     if(err){
-        return res.render('layouts/upload.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
+        return res.render('tests/studentTest.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
     }
 
     test.find({'status': 'active'}).exec((err, docs) => {
