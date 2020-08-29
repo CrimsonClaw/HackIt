@@ -144,13 +144,13 @@ module.exports.check = (req, res) => {
                     if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': doc.expected}
-                    obt[i] = {'output': result['stdout']}
+                    exp[i] = {'input': doc.input, 'output': JSON.stringify(doc.expected)}
+                    obt[i] = {'output': JSON.stringify(result['stdout'])}
                     i++;
                 });
             }
             console.log(exp, obt);
-            res.send({exp, obt})
+            res.send({exp, obt, passed})
         } 
 
         else if (selected_language === "C") {
