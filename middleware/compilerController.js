@@ -145,7 +145,7 @@ module.exports.check = (req, res) => {
                         passed++;
                     }
                     exp[i] = {'input': doc.input, 'output': JSON.parse(JSON.stringify(doc.expected))}
-                    obt[i] = {'output': JSON.parse(JSON.stringify(result['stdout']))}
+                    obt[i] = {'output': JSON.parse(JSON.stringify(result['stdout'])) === JSON.parse(JSON.stringify(doc.expected))}
                     i++;
                 });
             }
