@@ -143,15 +143,15 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await python.runFile('Main.py', { stdin: doc.input}, (err, result) => { 
-                    let expec = String(doc.expected);
-                    let out = String(result['stdout']);
-                    let expec1 = String(JSON.parse(JSON.stringify(doc.expected)));
-                    let out1 = String(JSON.parse(JSON.stringify(result['stdout'])));
+                    let expec = doc.expected;
+                    let out = result['stdout'];
+                    let expec1 = JSON.stringify(doc.expected);
+                    let out1 = JSON.stringify(result['stdout']);
                     if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
                         passed++;
                     }
                     exp[i] = {'input': doc.input, 'output': expec, 'output1': expec1}
-                    obt[i] = {'output':out, 'ouput1': out1, 'pass?': (expec1 == out1), 'pass1': expec.localeCompare(out), 'pass2': expec1.localeCompare(out1), 'pass3': (expec === out)}
+                    obt[i] = {'output':out, 'output1': out1, 'pass?': (expec1 == out1), 'pass1': expec.localeCompare(out1), 'pass2': expec1.localeCompare(out1), 'pass3': (expec === out), 'pass4': expec == out1}
                     i++;
                 });
             }
