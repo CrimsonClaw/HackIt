@@ -149,7 +149,7 @@ module.exports.check = (req, res) => {
                         passed++;
                     }
                     exp[i] = {'input': doc.input, 'output': expec}
-                    obt[i] = {'output': out}
+                    obt[i] = {'output': out, 'pass?': out == expec, 'pass1?': out === expec, 'pass??': out.localeCompare(expec)}
                     i++;
                 });
             }
