@@ -151,7 +151,7 @@ module.exports.check = (req, res) => {
                         passed++;
                     }
                     exp[i] = {'input': doc.input, 'output': typeof expec, 'output1': typeof expec1}
-                    obt[i] = {'output': typeof out, 'output1': typeof out1, 'pass?': (expec1 == out1), 'pass1': expec.localeCompare(out1), 'pass2': expec1.localeCompare(out1), 'pass3': (expec === out), 'pass4': expec == out1}
+                    obt[i] = {'output': typeof out, 'output1': typeof out1, 'pass?': (expec1 == out1), 'pass1': expec.localeCompare(out1), 'pass2': expec1-(out1), 'pass3': (expec-out), 'pass4': expec - out1}
                     i++;
                 });
             }
