@@ -45,9 +45,7 @@ module.exports = {
 
                 for(let doc of testcases) {
                     await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
-                        let expec = String(doc.expected);
-                        let out = String(result['stdout']);
-                        if(out === expec) {
+                        if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -69,7 +67,7 @@ module.exports = {
                 
                 for(let doc of testcases) {
                     await c.runFile('Main.C', { stdin: doc.input}, (err, result) => {
-                        if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
+                        if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -90,7 +88,7 @@ module.exports = {
             
                 for(let doc of testcases) {
                     await cpp.runFile('Main.CPP', { stdin: doc.input}, (err, result) => {
-                        if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
+                        if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -122,7 +120,7 @@ module.exports.check = (req, res) => {
 
             for(let doc of testcases) {
                 await java.runFile('Main.java', {compilationPath: 'javac', executionPath: 'java', stdin: doc.input,}, (err, result) => {
-                    if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
+                    if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
                         passed++;
                         total += parseInt(doc.score);
                     }
@@ -143,15 +141,11 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await python.runFile('Main.py', { stdin: doc.input}, (err, result) => { 
-                    let expec = doc.expected;
-                    let out = result['stdout'];
-                    let expec1 = JSON.stringify(doc.expected);
-                    let out1 = JSON.stringify(result['stdout']);
-                    if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
+                    if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': typeof expec, 'output1': typeof expec1}
-                    obt[i] = {'output': typeof out, 'output1': typeof out1, 'pass?': (expec1 == out1), 'pass1': expec.localeCompare(out1), 'pass2': (expec1)-(out1), 'pass3': (expec-out), 'pass4': expec - out1}
+                    exp[i] = {'input': doc.input, 'output': JSON.parse(JSON.stringify(doc.expected))}
+                    obt[i] = {'output': JSON.parse(JSON.stringify(result['stdout']))}
                     i++;
                 });
             }
@@ -169,7 +163,7 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await c.runFile('Main.C', { stdin: doc.input}, (err, result) => {
-                    if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
+                    if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
                         passed++;
                         total += parseInt(doc.score);
                     }
@@ -190,7 +184,7 @@ module.exports.check = (req, res) => {
         
             for(let doc of testcases) {
                 await cpp.runFile('Main.CPP', { stdin: doc.input}, (err, result) => {
-                    if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
+                    if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
                         passed++;
                         total += parseInt(doc.score);
                     }
