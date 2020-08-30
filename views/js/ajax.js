@@ -39,8 +39,8 @@ function createDiv(out, expec){
     var dynamicHTML = '';
     var pass = 0
     for(var i=0; i<out.length; i++){
-        console.log(out[i].output, expec[i].output, (out[i].output).localeCompare(expec[i].output))
-        if((out[i].output).localeCompare(expec[i].output) == 0)
+        console.log(out[i].output, expec[i].output, (String(out[i].output)).localeCompare(String(expec[i].output)))
+        if((String(out[i].output)).localeCompare(String(expec[i].output)) == 0)
             pass++;
       dynamicHTML += '<div class="split right" style="border:none;">'+
                             '<div style="border-color:#3D8EB9; box-shadow: 1px 1px 1px 1px #888888; margin-bottom: 3px; background-color: #fff;">'+
