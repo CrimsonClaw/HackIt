@@ -45,7 +45,9 @@ module.exports = {
 
                 for(let doc of testcases) {
                     await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
-                        if(JSON.parse(JSON.stringify(result['stdout'])) === JSON.parse(JSON.stringify(doc.expected))) {
+                        let expec = String(doc.expected);
+                        let out = String(result['stdout']);
+                        if(out === expec) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -141,11 +143,15 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await python.runFile('Main.py', { stdin: doc.input}, (err, result) => { 
+                    let expec = String(doc.expected);
+                    let out = String(result['stdout']);
+                    let expec1 = String(JSON.parse(JSON.stringify(doc.expected)));
+                    let out1 = String(JSON.parse(JSON.stringify(result['stdout'])));
                     if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': JSON.parse(JSON.stringify(doc.expected))}
-                    obt[i] = {'output': JSON.parse(JSON.stringify(result['stdout'])), 'pass?': (result['stdout']) == (doc.expected), 'pass1': JSON.parse(JSON.stringify(doc.expected)) == JSON.parse(JSON.stringify(result['stdout']))}
+                    exp[i] = {'input': doc.input, 'output': expec, 'output': expec1}
+                    obt[i] = {'output':out, 'ouput1': out1, 'pass?': (expec1 == out1), 'pass1': expec == out, 'pass2': (expec1 === out1), 'pass3': (expec === out)}
                     i++;
                 });
             }
