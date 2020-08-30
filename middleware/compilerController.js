@@ -45,7 +45,9 @@ module.exports = {
 
                 for(let doc of testcases) {
                     await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
-                        if((result['stdout']).toString() == (doc.expected).toString()) {
+                        let out = result['stdout'].replace(/[\r|\n|\r\n]$/, '');
+                        let expec = doc.input.replace(/[\r|\n|\r\n]$/, '');
+                        if(out == expec) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -141,11 +143,13 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await python.runFile('Main.py', { stdin: doc.input}, (err, result) => { 
+                    let out = result['stdout'].replace(/[\r|\n|\r\n]$/, '');
+                    let expec = doc.input.replace(/[\r|\n|\r\n]$/, '');
                     if((result['stdout']).toString() == (doc.expected).toString()) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': (doc.expected).toString()}
-                    obt[i] = {'output': (result['stdout']).toString()}
+                    exp[i] = {'input': doc.input, 'output': expec}
+                    obt[i] = {'output': out}
                     i++;
                 });
             }
