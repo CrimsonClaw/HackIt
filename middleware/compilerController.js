@@ -150,8 +150,8 @@ module.exports.check = (req, res) => {
                     if(JSON.stringify(result['stdout']) === JSON.stringify(doc.expected)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': expec, 'output1': expec1}
-                    obt[i] = {'output':out, 'output1': out1, 'pass?': (expec1 == out1), 'pass1': expec.localeCompare(out1), 'pass2': expec1.localeCompare(out1), 'pass3': (expec === out), 'pass4': expec == out1}
+                    exp[i] = {'input': doc.input, 'output': typeof expec, 'output1': typeof expec1}
+                    obt[i] = {'output': typeof out, 'output1': typeof out1, 'pass?': (expec1 == out1), 'pass1': expec.localeCompare(out1), 'pass2': expec1.localeCompare(out1), 'pass3': (expec === out), 'pass4': expec == out1}
                     i++;
                 });
             }
