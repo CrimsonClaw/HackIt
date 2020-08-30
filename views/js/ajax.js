@@ -30,20 +30,20 @@ $(document).ready(function() {
             data: formdata
         }).done(function(data) {
             console.log(data);
-            $.each(data, function(i, field){
-                createDiv(field);
-            });
+            createDiv(data.obt, data.exp);
         })
     })
 })
 
-function createDiv(data){
+function createDiv(out, expec){
     var dynamicHTML = '';
-    for(var i=0; i<data.length; i++){
+    var pass = 0
+    for(var i=0; i<out.length; i++){
+        if((out[i].output).localeCompare(expec[i].output) == 0)
+            pass++;
       dynamicHTML += '<div class="split right" style="border:none;">'+
                             '<div style="border-color:#3D8EB9; box-shadow: 1px 1px 1px 1px #888888; margin-bottom: 3px; background-color: #fff;">'+
-                                '<pre">'+ data[i].input +'</pre>'+
-                                '<pre">'+ data[i].output +'</pre>'+
+                                '<p">Test cases passed'+ pass +'</p>'+
                             '</div>'+
                         '</div>';
     }
