@@ -45,7 +45,7 @@ module.exports = {
 
                 for(let doc of testcases) {
                     await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
-                        if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
+                        if((result['stdout']).toString() == (doc.expected).toString()) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -141,11 +141,11 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await python.runFile('Main.py', { stdin: doc.input}, (err, result) => { 
-                    if(JSON.stringify(result['stdout']) == JSON.stringify(doc.expected)) {
+                    if((result['stdout']).toString() == (doc.expected).toString()) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': JSON.parse(JSON.stringify(doc.expected))}
-                    obt[i] = {'output': JSON.parse(JSON.stringify(result['stdout']))}
+                    exp[i] = {'input': doc.input, 'output': (doc.expected).toString()}
+                    obt[i] = {'output': (result['stdout']).toString()}
                     i++;
                 });
             }
