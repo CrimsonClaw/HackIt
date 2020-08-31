@@ -24,8 +24,8 @@ module.exports = {
 
                 for(let doc of testcases) {
                     await java.runFile('Main.java', {compilationPath: 'javac', executionPath: 'java', stdin: doc.input,}, (err, result) => {
-                        let out = (result['stdout']).replace(/[\r|\n|\r\n]$/, '');
-                        let expec = (doc.expected).replace(/[\r|\n|\r\n]$/, '');
+                        var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                        var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                         if(out == expec) {
                             passed++;
                             total += parseInt(doc.score);
@@ -47,9 +47,9 @@ module.exports = {
 
                 for(let doc of testcases) {
                     await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
-                        let out = (result['stdout']).replace(/[\r|\n|\r\n]$/, '');
-                        let expec = (doc.expected).replace(/[\r|\n|\r\n]$/, '');
-                        if(JSON.stringify(out) == JSON.stringify(expec)) {
+                        var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                        var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                        if(out == expec) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -71,8 +71,8 @@ module.exports = {
                 
                 for(let doc of testcases) {
                     await c.runFile('Main.C', { stdin: doc.input}, (err, result) => {
-                        let out = (result['stdout']).replace(/[\r|\n|\r\n]$/, '');
-                        let expec = (doc.expected).replace(/[\r|\n|\r\n]$/, '');
+                        var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                        var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                         if(out == expec) {
                             passed++;
                             total += parseInt(doc.score);
@@ -94,8 +94,8 @@ module.exports = {
             
                 for(let doc of testcases) {
                     await cpp.runFile('Main.CPP', { stdin: doc.input}, (err, result) => {
-                        let out = (result['stdout']).replace(/[\r|\n|\r\n]$/, '');
-                        let expec = (doc.expected).replace(/[\r|\n|\r\n]$/, '');
+                        var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                        var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                         if(out == expec) {
                             passed++;
                             total += parseInt(doc.score);
@@ -152,13 +152,13 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await python.runFile('Main.py', { stdin: doc.input}, (err, result) => { 
-                    let out = (result['stdout']).replace(/[\r\n|\r|\n]$/, '');
-                    let expec = (doc.expected).replace(/[\r\n|\r|\n]$/, '');
+                    var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                    var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                     if(out == expec) {
                         passed++;
                     }
                     exp[i] = {'input': doc.input, 'output': expec}
-                    obt[i] = {'output': out, 'pass': out.localeCompare(expec), 'pass1': JSON.stringify(out) == JSON.stringify(expec), 'pass2': (JSON.stringify(out)).localeCompare(JSON.stringify(expec))}
+                    obt[i] = {'output': out}
                     i++;
                 });
             }
@@ -176,8 +176,8 @@ module.exports.check = (req, res) => {
             
             for(let doc of testcases) {
                 await c.runFile('Main.C', { stdin: doc.input}, (err, result) => {
-                    let out = (result['stdout']).replace(/[\r|\n|\r\n]$/, '');
-                    let expec = (doc.expected).replace(/[\r|\n|\r\n]$/, '');
+                    var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                    var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                     if(out == expec) {
                         passed++;
                     }
@@ -200,8 +200,8 @@ module.exports.check = (req, res) => {
         
             for(let doc of testcases) {
                 await cpp.runFile('Main.CPP', { stdin: doc.input}, (err, result) => {
-                    let out = JSON.stringify(result['stdout']).replace(/[\r|\n|\r\n]$/, '');
-                    let expec = JSON.stringify(doc.expected).replace(/[\r|\n|\r\n]$/, '');
+                    var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
+                    var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                     if(out == expec) {
                         passed++;
                     }
