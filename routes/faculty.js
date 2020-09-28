@@ -1,4 +1,5 @@
 require('../models/Form');
+require('../models/User');
 
 const express = require('express');
 const path = require('path');
@@ -64,12 +65,6 @@ app.get('/newCase', (req, res) => {
 var sf = require('../middleware/sfController');
 app.post('/profile/update', ensureAuthenticated, sf.update);
 
-app.get('/createTest', ensureAuthenticated, (req, res) => {
-    User.find({email: req.user.email}, (err,docs) => {
-        res.render('faculty/createTest.hbs', {user: docs[0]});
-    });
-});
-
 //Results
 var results = require('../middleware/resultsController');
 
@@ -78,12 +73,14 @@ app.get('/:title/viewResults', results.total);
 app.get('/:title/viewResults/:name', results.getResults);
 
 //Tests
+app.get('/createTest', ensureAuthenticated, (req, res) => {
+    res.render('faculty/createTest.hbs', {username: req.user.fullName});
+});
+
 var form = require('../middleware/testFController');
 app.post('/create', ensureAuthenticated, form.create);
 
-app.post('/created', (req, res) => {
-    res.redirect('/faculty');
-});
+app.post('/:title/created', form.setStatus);
 
 app.post('/:title/update', ensureAuthenticated, form.update);
 

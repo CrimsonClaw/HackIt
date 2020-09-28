@@ -13,7 +13,7 @@ var router = express.Router();
 
 // Login Page
 router.get('/home', ensureAuthenticated, (req, res) => {
-    test.find({'status': 'active'}).exec((err, docs) => {
+    test.find().exec((err, docs) => {
         // Check if files
         res.render('admin/home.hbs', {tests: docs});
       });

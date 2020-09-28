@@ -1,4 +1,6 @@
 require('../models/Form');
+require('../models/Tests');
+require('../models/User');
 
 const express = require('express');
 const path = require('path');
@@ -11,9 +13,11 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 const { ensureAuthenticated } = require("../config/auth");
 const { compiler } = require('../middleware/compilerController');
 const { submit } = require('../middleware/submissionController');
+const { ensureAttempted } = require('../middleware/testSController');
 
 const User = mongoose.model('Users');
 const test = mongoose.model('Testdetail');
+const testR = mongoose.model('TestResult');
 
 var app = express();
 app.use(bodyParser.json());
@@ -57,8 +61,16 @@ app.set('view engine', 'hbs');
 //Home
 app.get('/', ensureAuthenticated, (req, res) => {
     if(req.user.role =='student' || req.user.role =='admin') {
-        test.find().exec((err, tests) => {
-            res.render('student/home.hbs', {title: req.user.role, username: req.user.fullName, test: tests, message: req.flash('message')});
+        test.find().exec(async (err, tests) => {
+            for (let i = 0; i < tests.length; i++) {
+                await testR.findOne({user: req.user.fullName, test: tests[i].title}, (err, doc) => {
+                    if (tests[i].status === 'active') {
+                        tests[i].attempted = doc.attempted;
+                    }
+                });
+            }
+            console.log(tests);
+            res.render('student/home.hbs', {title: req.user.role, username: req.user.fullName, test: tests});
         });
     }
     else {
@@ -72,23 +84,37 @@ app.get('/profile', ensureAuthenticated, (req, res) => {
     });
 });
 
+app.get('/submission', (req, res) => {
+    console.log(req.app.get('Title'));
+    testR.findOneAndUpdate({ user: req.user.fullName, test: req.app.get('Title') }, {attempted: true}, (err, doc) => {
+        console.log(doc)
+        if (!err) {
+            res.redirect('/student')
+         }
+        else console.log(err);
+    });
+});
+
 //Tests
 var testC = require('../middleware/testSController');
 
-app.use('/viewTest',ensureAuthenticated, testC.testAvail);
+app.use('/viewTest', ensureAuthenticated, testC.testAvail);
 
-app.get('/:title',ensureAuthenticated, testC.paginatedResults);
+app.get('/:title', ensureAuthenticated, ensureAttempted, testC.paginatedResults);
 
 //Results
 var results = require('../middleware/resultsController');
 app.get('/:title/results', ensureAuthenticated, results.getResults);
 
-app.post('/compile', compiler, submit, (req, res) => {
-    let pass = req.app.get('passed');
-    res.send({pass});
-});
+
 
 //Compiler
+app.post('/compile', compiler, submit, (req, res) => {
+    let pass = req.app.get('passed');
+    let total = req.app.get('total');
+    res.send({pass, total});
+});
+
 var compilerC = require('../middleware/compilerController');
 app.post('/check', compilerC.check);
 
