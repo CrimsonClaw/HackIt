@@ -118,17 +118,3 @@ module.exports.paginatedResults = async (req, res) => {
     }
   });
 };
-
-module.exports.testAvail = async (req, res) => {
-  MongoClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
-
-    if(err){
-        return res.render('tests/studentTest.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
-    }
-
-    test.find({'status': 'active'}).exec((err, docs) => {
-      // Check if files
-      res.render('tests/studentTest.hbs', {status: "Student", message: "Tests Available", tests: docs, cond: true, layout: 'testAvail.hbs'});
-    });
-  });
-};

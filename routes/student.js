@@ -78,12 +78,30 @@ app.get('/', ensureAuthenticated, (req, res) => {
     }
 });
 
+//User
+var sf = require('../middleware/sfController');
+app.post('/update', ensureAuthenticated, sf.update);
+
 app.get('/profile', ensureAuthenticated, (req, res) => {
     User.find({email: req.user.email}, (err, docs) => {
         res.render('student/profile.hbs', {username: req.user.fullName, user: docs[0], message: req.flash('message')});
     });
 });
 
+app.get('/profile/updatePwd', ensureAuthenticated, (req, res) => {
+    User.findById(req.user.id, (err, doc) => {
+        if (!err) {
+            res.render("student/editpwd", {
+                viewTitle: "Update Password",
+                user: doc
+            });
+        }   
+    }); 
+});
+
+app.post('/updatePwd', ensureAuthenticated, sf.updatePwd);
+
+//Submissions
 app.get('/submission', (req, res) => {
     console.log(req.app.get('Title'));
     testR.findOneAndUpdate({ user: req.user.fullName, test: req.app.get('Title') }, {attempted: true}, (err, doc) => {
@@ -98,15 +116,11 @@ app.get('/submission', (req, res) => {
 //Tests
 var testC = require('../middleware/testSController');
 
-app.use('/viewTest', ensureAuthenticated, testC.testAvail);
-
 app.get('/:title', ensureAuthenticated, ensureAttempted, testC.paginatedResults);
 
 //Results
 var results = require('../middleware/resultsController');
 app.get('/:title/results', ensureAuthenticated, results.getResults);
-
-
 
 //Compiler
 app.post('/compile', compiler, submit, (req, res) => {
@@ -117,9 +131,5 @@ app.post('/compile', compiler, submit, (req, res) => {
 
 var compilerC = require('../middleware/compilerController');
 app.post('/check', compilerC.check);
-
-//User
-var sf = require('../middleware/sfController');
-app.post('/update', ensureAuthenticated, sf.update);
 
 module.exports = app;

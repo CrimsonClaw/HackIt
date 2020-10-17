@@ -52,18 +52,32 @@ app.get('/', ensureAuthenticated, (req, res) => {
 
 app.get('/profile', ensureAuthenticated, (req, res) => {
     User.find({email: req.user.email}, (err, docs) => {
-        res.render('faculty/profile.hbs', {username: req.user.fullName, user: docs[0], message: req.flash('message')});
+        res.render('faculty/profile.hbs', {title: req.user.role, username: req.user.fullName, user: docs[0], message: req.flash('message')});
     });
 });
 
 app.get('/newCase', (req, res) => {
     let qid = req.app.get('q_id');
-    res.render('tests/addCase.hbs', {qid: qid, layout: false});
+    res.render('tests/addCase.hbs', {title: req.user.role, qid: qid, layout: false});
 })
 
 //User
 var sf = require('../middleware/sfController');
 app.post('/profile/update', ensureAuthenticated, sf.update);
+
+app.get('/profile/updatePwd', ensureAuthenticated, (req, res) => {
+    User.findById(req.user.id, (err, doc) => {
+        if (!err) {
+            res.render("faculty/editpwd", {
+                title: req.user.role,
+                viewTitle: "Update Password",
+                user: doc
+            });
+        }   
+    }); 
+});
+
+app.post('/updatePwd', ensureAuthenticated, sf.updatePwd);
 
 //Results
 var results = require('../middleware/resultsController');
@@ -74,7 +88,7 @@ app.get('/:title/viewResults/:name', results.getResults);
 
 //Tests
 app.get('/createTest', ensureAuthenticated, (req, res) => {
-    res.render('faculty/createTest.hbs', {username: req.user.fullName});
+    res.render('faculty/createTest.hbs', {title: req.user.role, username: req.user.fullName});
 });
 
 var form = require('../middleware/testFController');
@@ -92,8 +106,6 @@ app.post('/:title/cancel', ensureAuthenticated, form.delete);
 
 //File Uploads
 var uploads = require('../middleware/uploadController');
-
-app.get('/viewTest', ensureAuthenticated, uploads.testAvail);
 
 app.get('/:title', ensureAuthenticated, uploads.loadHome);
 

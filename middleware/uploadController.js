@@ -68,7 +68,7 @@ module.exports.loadHome = (req, res) => {
     collection.find({'filename': {$regex: `^${Title}_`}}).toArray((err, files) => {
       // Check if files
       if (!files || files.length === 0) {
-        res.render('tests/testCreate.hbs', { title: Title, files: false, message: "Upload Files", layout: 'upload.hbs' });
+        res.render('tests/testCreate.hbs', { title: Title, username: req.user.fullName, files: false, message: "Upload Files", layout: 'upload.hbs' });
       } else {
         files.map(file => {
           if (
@@ -80,7 +80,7 @@ module.exports.loadHome = (req, res) => {
             file.isImage = false;
           }
         });
-        res.render('tests/testCreate.hbs', { title: Title, message: "Upload Files", files: files, layout: 'upload.hbs'});
+        res.render('tests/testCreate.hbs', { title: Title, message: "Upload Files", username: req.user.fullName, files: files, layout: 'upload.hbs'});
       }
     });
   });
@@ -101,25 +101,11 @@ module.exports.uploadFile = async (req, res) => {
   });
 };
 
-module.exports.testAvail = async (req, res, next) => {
-  MongoClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
-
-    if(err){
-        return res.render('tests/staffTest.hbs',{title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
-    }
-
-    test.find().exec((err, docs) => {
-      // Check if files
-      res.render('tests/staffTest.hbs', {status: "Faculty", message: "Tests Created", tests: docs, layout: 'testAvail'});
-    });
-  });
-};
-
 module.exports.viewTest = (req, res) => {
   Title = req.params.title;
   MongoClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
     if(err){
-        return res.render('layouts/upload.hbs', {title: Title, message: 'MongoClient Connection error', error: err.errMsg, layout: false});
+        return res.render('layouts/upload.hbs', {title: Title, message: 'MongoClient Connection error', username: req.user.fullName, error: err.errMsg, layout: false});
     }
     const db = client.db(dbName);
     
@@ -129,7 +115,7 @@ module.exports.viewTest = (req, res) => {
     collection.find({'filename': {$regex: `^${Title}_`}}).toArray((err, files) => {
       // Check if files
       if (!files || files.length === 0) {
-        res.render('layouts/upload.hbs', { title: Title, files: false, message: "Upload Questions", layout: false });
+        res.render('layouts/upload.hbs', { title: Title, files: false, username: req.user.fullName, message: "Upload Questions", layout: false });
       } else {
         files.map(file => {
           if (
@@ -141,7 +127,7 @@ module.exports.viewTest = (req, res) => {
             file.isImage = false;
           }
         });
-        res.render('layouts/upload.hbs', { title: Title, message: "Upload Questions", files: files, layout: false});
+        res.render('layouts/upload.hbs', { title: Title, message: "Upload Questions", username: req.user.fullName, files: files, layout: false});
       }
     });
   });
@@ -150,7 +136,7 @@ module.exports.viewTest = (req, res) => {
 module.exports.delete = (req, res) => {
   MongoClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
     if(err){
-      return res.render('layouts/upload.hbs', {title: Title, message: 'MongoClient Connection error', error: err.errMsg, layout: false});
+      return res.render('layouts/upload.hbs', {title: Title, message: 'MongoClient Connection error', username: req.user.fullName, error: err.errMsg, layout: false});
     }
 
     gfs.delete(new mongoose.Types.ObjectId(req.params._id), (err, data) => {
@@ -166,7 +152,7 @@ module.exports.testcase = (req, res) => {
   MongoClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
 
     if(err){
-        return res.render('layouts/upload.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', error: err.errMsg, layout: false});
+        return res.render('layouts/upload.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', username: req.user.fullName, error: err.errMsg, layout: false});
     }
     const db = client.db(dbName);
     
