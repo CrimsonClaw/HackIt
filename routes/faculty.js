@@ -56,11 +56,6 @@ app.get('/profile', ensureAuthenticated, (req, res) => {
     });
 });
 
-app.get('/newCase', (req, res) => {
-    let qid = req.app.get('q_id');
-    res.render('tests/addCase.hbs', {title: req.user.role, qid: qid, layout: false});
-})
-
 //User
 var sf = require('../middleware/sfController');
 app.post('/profile/update', ensureAuthenticated, sf.update);
@@ -79,6 +74,22 @@ app.get('/profile/updatePwd', ensureAuthenticated, (req, res) => {
 
 app.post('/updatePwd', ensureAuthenticated, sf.updatePwd);
 
+//TestCase
+app.get('/newCase', (req, res) => {
+    let qid = req.app.get('q_id');
+    res.render('tests/addCase.hbs', {title: "Add Test Case", username: req.user.fullName, qid: qid});
+});
+
+var testCase = require('../middleware/testCaseController');
+
+app.post('/addCase', testCase.create);
+
+app.post('/updateCase', testCase.update);
+
+app.get('/viewCase/:_id', testCase.view);
+
+app.get('/delCase/:_id', testCase.delete);
+
 //Results
 var results = require('../middleware/resultsController');
 
@@ -88,7 +99,7 @@ app.get('/:title/viewResults/:name', results.getResults);
 
 //Tests
 app.get('/createTest', ensureAuthenticated, (req, res) => {
-    res.render('faculty/createTest.hbs', {title: req.user.role, username: req.user.fullName});
+    res.render('faculty/createTest.hbs', {title: "Create Test", username: req.user.fullName});
 });
 
 var form = require('../middleware/testFController');
@@ -116,16 +127,5 @@ app.get('/:title/viewFiles', ensureAuthenticated, uploads.viewTest);
 app.post('/del/:_id', ensureAuthenticated, uploads.delete);
 
 app.get('/view/:_id', ensureAuthenticated, uploads.testcase);
-
-//TestCase
-var testCase = require('../middleware/testCaseController');
-
-app.post('/addCase', testCase.create);
-
-app.post('/updateCase', testCase.update);
-
-app.get('/viewCase/:_id', testCase.view);
-
-app.get('/delCase/:_id', testCase.delete);
 
 module.exports = app;

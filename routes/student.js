@@ -13,7 +13,7 @@ const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-acce
 const { ensureAuthenticated } = require("../config/auth");
 const { compiler } = require('../middleware/compilerController');
 const { submit } = require('../middleware/submissionController');
-const { ensureAttempted } = require('../middleware/testSController');
+const { ensureAttempted, checkUser } = require('../middleware/testSController');
 
 const User = mongoose.model('Users');
 const test = mongoose.model('Testdetail');
@@ -59,7 +59,7 @@ app.engine('hbs', exphbs({ extname: 'hbs', defaultLayout: 'userLayout', layoutsD
 app.set('view engine', 'hbs');
 
 //Home
-app.get('/', ensureAuthenticated, (req, res) => {
+app.get('/', ensureAuthenticated, checkUser, (req, res) => {
     if(req.user.role =='student' || req.user.role =='admin') {
         test.find().exec(async (err, tests) => {
             for (let i = 0; i < tests.length; i++) {
@@ -69,7 +69,6 @@ app.get('/', ensureAuthenticated, (req, res) => {
                     }
                 });
             }
-            console.log(tests);
             res.render('student/home.hbs', {title: req.user.role, username: req.user.fullName, test: tests});
         });
     }
@@ -105,7 +104,6 @@ app.post('/updatePwd', ensureAuthenticated, sf.updatePwd);
 app.get('/submission', (req, res) => {
     console.log(req.app.get('Title'));
     testR.findOneAndUpdate({ user: req.user.fullName, test: req.app.get('Title') }, {attempted: true}, (err, doc) => {
-        console.log(doc)
         if (!err) {
             res.redirect('/student')
          }

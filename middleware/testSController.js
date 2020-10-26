@@ -41,6 +41,28 @@ module.exports = {
       else
         res.redirect('/student');
     });
+  },
+
+  checkUser : (req, res, next) => {
+    testR.findOne({user: req.user.fullName, test: req.params.title}, (err, doc) => {
+      if (doc !== null) {
+        return next();
+      }
+      else {
+        test.find().exec(async (err, tests) => {
+          for (let i = 0; i < tests.length; i++) {
+            var r = new testR();
+            r.user = req.user.fullName;
+            r.test = tests[i].title;
+            r.attempted = false;
+            r.save((err, doc) => {
+                if (err) throw err;
+            }); 
+          }
+          return next();
+      });
+      }
+    });
   }
 };
 

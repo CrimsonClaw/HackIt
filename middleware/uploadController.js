@@ -152,7 +152,7 @@ module.exports.testcase = (req, res) => {
   MongoClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
 
     if(err){
-        return res.render('layouts/upload.hbs', {title: 'Uploaded Error', message: 'MongoClient Connection error', username: req.user.fullName, error: err.errMsg, layout: false});
+        return res.render('tests/testCase.hbs', {title: 'View Test Cases', message: 'MongoClient Connection error', username: req.user.fullName, error: err.errMsg});
     }
     const db = client.db(dbName);
     
@@ -164,19 +164,19 @@ module.exports.testcase = (req, res) => {
       req.app.set('q_id', req.params._id)
       collection.find({'_id': id}).toArray(function(err, docs){
         if(err){
-          return res.render('tests/testCase.hbs', {title: 'File error', message: 'Error finding file', error: err.errMsg, layout: false});
+          return res.render('tests/testCase.hbs', {title: 'File error', username: req.user.fullName, message: 'Error finding file', error: err.errMsg, layout: false});
         }
         if(!docs || docs.length === 0){
-          return res.render('tests/testCase.hbs', {title: 'Download Error', message: 'No file found', layout: false});
+          return res.render('tests/testCase.hbs', {title: 'Download Error', username: req.user.fullName, message: 'No file found', layout: false});
         }else{
         //Retrieving the chunks from the db
           collectionChunks.find({files_id : docs[0]._id}).sort({n: 1}).toArray(function(err, chunks){
               if(err){
-              return res.render('tests/testCase.hbs', {title: 'Download Error', message: 'Error retrieving chunks', error: err.errmsg, layout: false});
+              return res.render('tests/testCase.hbs', {title: 'Download Error', username: req.user.fullName, message: 'Error retrieving chunks', error: err.errmsg, layout: false});
               }
               if(!chunks || chunks.length === 0){
               //No data found
-              return res.render('tests/testCase.hbs', {title: 'Download Error', message: 'No data found', layout: false});
+              return res.render('tests/testCase.hbs', {title: 'View Test Cases', username: req.user.fullName, message: 'No data found', layout: false});
               }
               //Append Chunks
               let fileData = [];
@@ -189,7 +189,7 @@ module.exports.testcase = (req, res) => {
               let finalFile = 'data:' + docs[0].contentType + ';base64,' + fileData.join('');
               
               testcase.find({questionid: docs[0]._id}).exec((err, tests) => {
-                res.render('tests/testCase.hbs', {fileurl: finalFile, testcase: tests, layout: false});
+                res.render('tests/testCase.hbs', {title: 'View Test Cases', username: req.user.fullName, fileurl: finalFile, testcase: tests, layout: false});
               });
           });
         } 
