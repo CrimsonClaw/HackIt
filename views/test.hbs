@@ -86,7 +86,7 @@
         <textarea class="input" id="main" rows="4" cols="30" readonly></textarea>
     </div>
     <div class="topnav">
-        <a href="/student/{{title}}?page={{math pages '-' 1}}">Prev</a>
+        <a href="/student/{{title}}?page={{math pages '-' 1}}" id="prev">Prev</a>
         <a href="/student/{{title}}?page={{math pages '+' 1}}" id="next">Next</a>
         <h3 class="float-xl-right float-lg-right float-md-right" id="clock"></h3>
     </div>
@@ -103,6 +103,20 @@
       crossorigin="anonymous"
     ></script>
     <script>
+        var decodedJson = decodeURIComponent("{{{pages}}}");
+        var currP = JSON.parse(decodedJson);
+        var decodedJson = decodeURIComponent("{{{total}}}");
+        var last = JSON.parse(decodedJson);
+        $(document).ready(function(){
+            if (currP == 1)
+            {    
+                $('#prev').hide();
+            }
+            else if (currP == last)
+            {
+                $('#next').hide();
+            }
+        });
         window.onload = prepareTheme('Java Program');
         editor.on('change', editor => {
                 localStorage.setItem("code", editor.getValue());

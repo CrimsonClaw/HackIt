@@ -68,6 +68,22 @@
         <h3>Test Cases Passed: {{pass}}</h3>
     </div>
     {{{body}}}
+    <script>
+        var decodedJson = decodeURIComponent("{{{pages}}}");
+        var currP = JSON.parse(decodedJson);
+        var decodedJson = decodeURIComponent("{{{total}}}");
+        var last = JSON.parse(decodedJson);
+        $(document).ready(function(){
+            if (currP == 1)
+            {    
+                $('#prev').hide();
+            }
+            else if (currP == last)
+            {
+                $('#next').hide();
+            }
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-2.0.3.min.js"
         integrity="sha256-sTy1mJ4I/LAjFCCdEB4RAvPSmRCb3CU7YqodohyeOLo=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"

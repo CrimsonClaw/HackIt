@@ -113,9 +113,9 @@ module.exports.getResults = async (req, res, next) => {
                   p = docr.passedCases;
                 }
                 if (role === 'student')
-                  res.render('results/student.hbs', {title: Title, fileurl: finalFile, score: s, code: c, pass: p, pages: page, layout: 'result'});
+                  res.render('results/student.hbs', {title: Title, fileurl: finalFile, score: s, code: c, pass: p, pages: page, total: questions, layout: 'result'});
                 else
-                res.render('results/faculty.hbs', {title: Title, fileurl: finalFile, student: Sname, score: s, code: c, pass: p, pages: page, layout: 'result'});
+                res.render('results/faculty.hbs', {title: Title, fileurl: finalFile, student: Sname, score: s, code: c, pass: p, pages: page, total: questions, layout: 'result'});
               }
             });
           });

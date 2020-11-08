@@ -44,25 +44,26 @@ module.exports = {
   },
 
   checkUser : (req, res, next) => {
-    testR.findOne({user: req.user.fullName, test: req.params.title}, (err, doc) => {
-      if (doc !== null) {
-        return next();
-      }
-      else {
-        test.find().exec(async (err, tests) => {
-          for (let i = 0; i < tests.length; i++) {
-            var r = new testR();
-            r.user = req.user.fullName;
-            r.test = tests[i].title;
-            r.attempted = false;
-            r.save((err, doc) => {
-                if (err) throw err;
-            }); 
+    test.find((err, tests) => {
+      if (err) throw err;
+      for (let check of tests) {
+        testR.findOne({user: req.user.fullName, test: check.title}, (err, doc) => {
+          if (doc !== null) {
+            console.log('Already set!');
           }
-          return next();
-      });
+          else {
+              var r = new testR();
+              r.user = req.user.fullName;
+              r.test = check.title;
+              r.attempted = false;
+              r.save((err, doc) => {
+                  if (err) throw err;
+              }); 
+          }
+        });
       }
     });
+    return next();
   }
 };
 
@@ -131,7 +132,7 @@ module.exports.paginatedResults = async (req, res) => {
           let finalFile = 'data:' + docs[0].contentType + ';base64,' + fileData.join('');
           req.app.set('qid', docs[0]._id);
           req.app.set('curpage', page);
-          res.render('test.hbs', {title: Title, fileurl: finalFile, pages: page, dur: encodeURIComponent(JSON.stringify(timer)), layout: false});
+          res.render('test.hbs', {title: Title, fileurl: finalFile, pages: page, total: questions, dur: encodeURIComponent(JSON.stringify(timer)), layout: false});
         });
       } 
     });
