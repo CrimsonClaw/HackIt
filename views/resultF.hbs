@@ -1,16 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-    </head>
-    <body>
-        <h1>{{count}}</h1>
-        {{#each subs}}
-        <div>
-            {{this}} <button onclick="window.location.href='viewResults/{{this}}?page=1'">View Submissions</button>
+<div class="col-sm-2 col-md-2 col-lg-2 col-xl-2">
+    <nav class="navbar navbar-expand-lg navbar-light flex-column">
+        <a class="navbar-brand" style="font-size: 20px;" href="/faculty">Home</a>
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <br /><br />
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav flex-column">
+                <li class="nav-item mt-md-2">
+                    <a class="nav-link"
+                        style="font-size: 23px;"
+                        href="/faculty/profile"
+                        id="teacher-nav"
+                        >Profile</a>
+                </li>
+                <li class="nav-item mt-md-2">
+                    <a class="nav-link"
+                        style="font-size: 23px;"
+                        href="/faculty/createTest"
+                        id="teacher-nav"
+                        >Create Test</a>
+                </li>
+            </ul>
         </div>
-        {{/each}}
-    </body>
-</html>
+    </nav>
+</div>
+<div class="offset-md-1 col-12 col-md-9" id="view">
+    <h1>{{count}}</h1>
+    {{#each subs}}
+    <div>
+        {{this}} <button onclick="window.location.href='{{this}}?page=1'">View Submissions</button>
+    </div>
+    {{/each}}
+</div>

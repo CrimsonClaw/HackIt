@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const Handlebars = require('handlebars')
 const exphbs = require('express-handlebars');
+
 const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
 const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
 
@@ -14,13 +15,14 @@ const User = mongoose.model('Users');
 const test = mongoose.model('Testdetail');
 
 var app = express();
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
 app.use(express.static(__dirname + '/../views'));
 app.set('views', path.join(__dirname + '/../views'));
+
 app.engine('hbs', exphbs({ extname: 'hbs', defaultLayout: 'userLayout', layoutsDir: 'views/layouts/', handlebars: allowInsecurePrototypeAccess(Handlebars), helpers:{
     // Function to do basic mathematical operation in handlebar
     math: function(lvalue, operator, rvalue) {lvalue = parseFloat(lvalue);
@@ -81,7 +83,6 @@ app.get('/newCase', (req, res) => {
 });
 
 var testCase = require('../middleware/testCaseController');
-
 app.post('/addCase', testCase.create);
 
 app.post('/updateCase', testCase.update);
@@ -92,10 +93,9 @@ app.get('/delCase/:_id', testCase.delete);
 
 //Results
 var results = require('../middleware/resultsController');
+app.get('/:title/viewResults', ensureAuthenticated, results.total);
 
-app.get('/:title/viewResults', results.total);
-
-app.get('/:title/viewResults/:name', results.getResults);
+app.get('/:title/:name', ensureAuthenticated, results.getResults);
 
 //Tests
 app.get('/createTest', ensureAuthenticated, (req, res) => {
@@ -117,7 +117,6 @@ app.post('/:title/cancel', ensureAuthenticated, form.delete);
 
 //File Uploads
 var uploads = require('../middleware/uploadController');
-
 app.get('/:title', ensureAuthenticated, uploads.loadHome);
 
 app.post('/uploadTest/upload', ensureAuthenticated, uploads.uploadFile);

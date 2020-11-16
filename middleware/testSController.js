@@ -11,6 +11,7 @@ const dbName = "test";
 
 const test= mongoose.model('Testdetail');
 const testR = mongoose.model('TestResult');
+const testcase = mongoose.model('Testcase');
 
 let storage = new GridFsStorage({
   url: url,
@@ -48,9 +49,7 @@ module.exports = {
       if (err) throw err;
       for (let check of tests) {
         testR.findOne({user: req.user.fullName, test: check.title}, (err, doc) => {
-          if (doc !== null) {
-            console.log('Already set!');
-          }
+          if (doc !== null) {}
           else {
               var r = new testR();
               r.user = req.user.fullName;
@@ -128,11 +127,13 @@ module.exports.paginatedResults = async (req, res) => {
             //in fileData array in base64 endocoded string format
             fileData.push(chunks[i].data.toString('base64'));
           }
-          //Display the chunks using the data URI format
           let finalFile = 'data:' + docs[0].contentType + ';base64,' + fileData.join('');
           req.app.set('qid', docs[0]._id);
           req.app.set('curpage', page);
-          res.render('test.hbs', {title: Title, fileurl: finalFile, pages: page, total: questions, dur: encodeURIComponent(JSON.stringify(timer)), layout: false});
+          //Display the chunks using the data URI format
+          testcase.find({questionid: docs[0]._id, sample: 'true'}).exec(async (err, testcases) => {
+            res.render('test.hbs', {title: Title, fileurl: finalFile, pages: page, total: questions, case: testcases, dur: encodeURIComponent(JSON.stringify(timer)), layout: false});
+          });
         });
       } 
     });

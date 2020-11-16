@@ -1,7 +1,4 @@
-require('../routes/student');
-
 const MongoClient = require('mongodb');
-const { ObjectId } = require('mongodb');
 
 const url = "mongodb+srv://mongo:mongo@cluster0-4zn27.mongodb.net/test?retryWrites=true&w=majority";
 const dbName = "test";

@@ -1,9 +1,11 @@
+require('../models/User');
+
 const mongoose = require('mongoose');
-const User = mongoose.model('Users');
 const bcrypt = require('bcryptjs');
-const app = require('../routes/uploads');
 const express = require('express');
 const { route } = require('../routes/uploads');
+
+const User = mongoose.model('Users');
 const router = express.Router();
 
 module.exports.register = (req, res) => {

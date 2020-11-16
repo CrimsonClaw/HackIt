@@ -1,13 +1,14 @@
+require('../models/User');
+require('../models/Form');
+
 const express = require('express');
 const mongoose = require('mongoose');
-const User = mongoose.model('Users');
-const test = mongoose.model('Testdetail');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const { role } = require('fs');
-const { loadavg } = require('os');
-const { ensureAuthenticated, forwardAuthenticated } = require("../config/auth");
-const {allowInsecurePrototypeAccess} = require('@handlebars/allow-prototype-access');
+const { ensureAuthenticated } = require("../config/auth");
+
+const User = mongoose.model('Users');
+const test = mongoose.model('Testdetail');
 
 var router = express.Router();
 

@@ -17,9 +17,8 @@ $(document).ready(function() {
 $(document).ready(function() {
     $('#compile').on('click', function(e) {
         var formdata = $('#myForm').serializeArray();
-        let code = localStorage.getItem('code');
-        formdata[1].value = code;
-        console.log(formdata)
+        formdata[1].value = localStorage.getItem("code");
+        console.log(formdata);
         $.ajax({
             type: 'post',
             dataType: 'json',
@@ -28,11 +27,11 @@ $(document).ready(function() {
         }).done(function(data) {
             console.log(data);
             let obt = data.obt;
-            let  exp = data.exp;
-            console.log(obt, exp);
+            console.log(obt);
             var dynamicHTML;
             for(var i=0; i<obt.length; i++){
-                $("#main").append("Expected: " + exp[i].output + "   Obtained: " + obt[i].output + "<br><br>");
+                var id = "#out" + String(i);
+                $(id).html(obt[i].output);
             }
         })
     })

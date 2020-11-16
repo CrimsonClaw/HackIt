@@ -1,5 +1,4 @@
 require('../models/TestCase');
-require('../routes/student');
 
 const fs = require('fs');
 const { c, cpp, node, python, java } = require('compile-run');
@@ -28,7 +27,7 @@ module.exports = {
                     await java.runFile('Main.java', {compilationPath: 'javac', executionPath: 'java', stdin: doc.input,}, (err, result) => {
                         var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                         var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                        if(out == expec) {
+                        if(JSON.stringify(out) === JSON.stringify(expec)) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -51,7 +50,7 @@ module.exports = {
                     await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
                         var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                         var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                        if(out == expec) {
+                        if(JSON.stringify(out) === JSON.stringify(expec)) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -75,7 +74,7 @@ module.exports = {
                     await c.runFile('Main.C', { stdin: doc.input}, (err, result) => {
                         var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                         var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                        if(out == expec) {
+                        if(JSON.stringify(out) === JSON.stringify(expec)) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -98,7 +97,7 @@ module.exports = {
                     await cpp.runFile('Main.CPP', { stdin: doc.input}, (err, result) => {
                         var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                         var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                        if(out == expec) {
+                        if(JSON.stringify(out) === JSON.stringify(expec)) {
                             passed++;
                             total += parseInt(doc.score);
                         }
@@ -117,7 +116,6 @@ module.exports.check = (req, res, next) => {
         console.log(testcases);
         let selected_language = req.body.language;
         let passed = 0, i = 0;
-        let exp = [];
         let obt = [];
         
         if (selected_language === "Java") {
@@ -132,16 +130,15 @@ module.exports.check = (req, res, next) => {
                 await java.runFile('Main.java', {compilationPath: 'javac', executionPath: 'java', stdin: doc.input,}, (err, result) => {
                     var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                     var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                    if(out == expec) {
+                    if(JSON.stringify(out) === JSON.stringify(expec)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': expec}
                     obt[i] = {'output': out}
                     i++;
                 });
             }
-            console.log(exp, obt);
-            res.send({exp, obt, passed})
+            console.log(obt);
+            res.send({obt, passed})
         }
 
         else if (selected_language === "Python") {
@@ -156,17 +153,16 @@ module.exports.check = (req, res, next) => {
                 await python.runFile('Main.py', { stdin: doc.input}, (err, result) => {
                     var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                     var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                    if(out == expec) {
+                    if(JSON.stringify(out) === JSON.stringify(expec)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': expec}
                     obt[i] = {'output': out}
                     i++;
                 });
-                console.log(exp, obt);
+                console.log(obt);
             }
-            console.log(exp, obt);
-            res.send({exp, obt, passed})
+            console.log(obt);
+            res.send({obt, passed})
         } 
 
         else if (selected_language === "C") {
@@ -181,16 +177,15 @@ module.exports.check = (req, res, next) => {
                 await c.runFile('Main.C', { stdin: doc.input}, (err, result) => {
                     var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                     var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                    if(out == expec) {
+                    if(JSON.stringify(out) === JSON.stringify(expec)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': expec}
                     obt[i] = {'output': out}
                     i++;
                 });
             }
-            console.log(exp, obt);
-            res.send({exp, obt, passed})
+            console.log(obt);
+            res.send({obt, passed})
         } 
 
         else if (selected_language === "C++") {
@@ -205,16 +200,15 @@ module.exports.check = (req, res, next) => {
                 await cpp.runFile('Main.CPP', { stdin: doc.input}, (err, result) => {
                     var out = (result['stdout']).replace(/(?:\\[rn]|[\r\n]+)$/, '');
                     var expec = (doc.expected).replace(/(?:\\[rn]|[\r\n]+)$/, '');
-                    if(out == expec) {
+                    if(JSON.stringify(out) === JSON.stringify(expec)) {
                         passed++;
                     }
-                    exp[i] = {'input': doc.input, 'output': expec}
                     obt[i] = {'output': out}
                     i++;
                 });
             }
-            console.log(exp, obt);
-            res.send({exp, obt, passed})
+            console.log(obt);
+            res.send({obt, passed})
         }
     });
 };

@@ -1,6 +1,7 @@
 require('../models/Form');
 require('../models/Tests');
 require('../models/User');
+require('../models/TestCase')
 
 const express = require('express');
 const path = require('path');
@@ -113,7 +114,6 @@ app.get('/submission', (req, res) => {
 
 //Tests
 var testC = require('../middleware/testSController');
-
 app.get('/:title', ensureAuthenticated, ensureAttempted, testC.paginatedResults);
 
 //Results

@@ -1,16 +1,16 @@
 require('../models/Form');
-require('../routes/student');
+require('../models/TestCase');
 
 const MongoClient = require('mongodb');
 const multer = require('multer');
 const GridFsStorage = require('multer-gridfs-storage')
 const mongoose = require('mongoose');
-const app = require('../routes/uploads');
 
 const url = "mongodb+srv://mongo:mongo@cluster0-4zn27.mongodb.net/test?retryWrites=true&w=majority";
 const dbName = "test";
 
 const test= mongoose.model('Testdetail');
+const testcase = mongoose.model('Testcase');
 
 let storage = new GridFsStorage({
   url: url,
@@ -32,7 +32,7 @@ storage.on('connection', (db) => {
   
 });
 
-module.exports.getResults = async (req, res, next) => {
+module.exports.getResults = (req, res) => {
     let Title;
     let questions;
     
@@ -64,23 +64,23 @@ module.exports.getResults = async (req, res, next) => {
       collection.find({'filename': {$regex: `^${Title}_Q`}}).limit(limit).skip(startIndex).toArray(function(err, docs){
         if(err){
           if (role === 'student')
-            return res.render('results/student.hbs', {title: Title, message: 'No File Found', layout: 'result'});
+            return res.render('results/student.hbs', {title: Title, message: 'No File Found'});
           else
-            return res.render('results/faculty.hbs', {title: Title, message: 'No File Found', layout: 'result'});
+            return res.render('results/faculty.hbs', {title: Title, message: 'No File Found'});
         }
         if(!docs || docs.length === 0){
           if (role === 'student')
-            return res.render('results/student.hbs', {title: Title, message: 'Error retrieving chunks', layout: 'result'});
+            return res.render('results/student.hbs', {title: Title, message: 'Error retrieving chunks'});
           else
-            return res.render('results/faculty.hbs', {title: Title, message: 'Error retrieving chunks', layout: 'result'});
+            return res.render('results/faculty.hbs', {title: Title, message: 'Error retrieving chunks'});
         }else{
         //Retrieving the chunks from the db
           collectionChunks.find({files_id : docs[0]._id}).sort({n: 1}).toArray(function(err, chunks){
             if(err){
               if (role === 'student')
-                return res.render('results/student.hbs', {title: Title, message: 'Error retrieving chunks', error: err.errmsg, layout: 'result'});
+                return res.render('results/student.hbs', {title: Title, message: 'Error retrieving chunks', error: err.errmsg});
               else
-                return res.render('results/faculty.hbs', {title: Title, message: 'Error retrieving chunks', error: err.errmsg, layout: 'result'});
+                return res.render('results/faculty.hbs', {title: Title, message: 'Error retrieving chunks', error: err.errmsg});
             }
             if(!chunks || chunks.length === 0){
               //No data found
@@ -95,28 +95,33 @@ module.exports.getResults = async (req, res, next) => {
             }
             //Display the chunks using the data URI format
             let finalFile = 'data:' + docs[0].contentType + ';base64,' + fileData.join('');
-            
+
+            req.app.set('curpage', page);
             let Sname = req.params.name || req.user.fullName;
 
-            var query = { name: Sname, questionid: docs[0]._id };
-            col.findOne(query, (err, docr) => {
-              if (err) {
-                console.log(err);
-              } else {
-                console.log(docr);
-                var s = 0;
-                var c = '';
-                var p = 0;
-                if (docr !== null) {
-                  s = docr.score;
-                  c = docr.code;
-                  p = docr.passedCases;
+            var tcCount = 0;
+            testcase.find({questionid: docs[0]._id, sample: 'false'}).exec((err, testcases) => {
+              tcCount = testcases.length;
+            
+              var query = { name: Sname, questionid: docs[0]._id };
+              col.findOne(query, (err, docr) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  var s = 0;
+                  var c = '';
+                  var p = 0;
+                  if (docr !== null) {
+                    s = docr.score;
+                    c = docr.code;
+                    p = docr.passedCases;
+                  }
+                  if (role === 'student')
+                    res.render('results/student.hbs', {username: req.user.fullName, title: Title, pages: page, total: questions, fileurl: finalFile, score: s, code: c, pass: p, totalT: tcCount, layout: false});
+                  else
+                    res.render('results/faculty.hbs', {username: req.user.fullName, title: Title, pages: page, total: questions, fileurl: finalFile, student: Sname, score: s, code: c, pass: p, totalT: tcCount, layout: false});
                 }
-                if (role === 'student')
-                  res.render('results/student.hbs', {title: Title, fileurl: finalFile, score: s, code: c, pass: p, pages: page, total: questions, layout: 'result'});
-                else
-                res.render('results/faculty.hbs', {title: Title, fileurl: finalFile, student: Sname, score: s, code: c, pass: p, pages: page, total: questions, layout: 'result'});
-              }
+              });
             });
           });
         } 
@@ -131,15 +136,14 @@ module.exports.total = (req, res) => {
     let Title = req.params.title;
     MongoClient.connect(url, {useUnifiedTopology: true, useNewUrlParser: true}, function(err, client){
       if(err){
-        return res.render('resultF.hbs', {title: Title, message: 'MongoClient Connection error', error: err.errMsg, layout: false});
+        return res.render('resultF.hbs', {username: req.user.fullName, title: Title, message: 'MongoClient Connection error', error: err.errMsg});
       }
       const db = client.db(dbName);
       const col = db.collection(Title);
 
       col.find().toArray((err, results) => {
         const unique = [...new Set(results.map(item => item.name))];
-        console.log(unique);
-        res.render('resultF.hbs', {title: Title, count: unique.length, subs: unique, layout: false})
-      })
+        res.render('resultF.hbs', {username: req.user.fullName, title: Title, count: unique.length, subs: unique})
+      });
     });
 };
