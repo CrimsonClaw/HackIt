@@ -33,7 +33,7 @@
 </div>
 
 <div class="container-fluid col-sm-9" id="view">
-    <div class="container-fluid"id="View_Live">
+    <div class="container-fluid" id="View_Live">
         <h3 class="row"><span class="offset-sm-5 badge badge-success" style="padding:8px 8px 8px 8px">RESULTS</span></h3>
         <div id="view_results">
             <div class="row">
@@ -47,7 +47,7 @@
                                 
                                 <td rowspan="2" style="padding:25px 25px 25px 25px">
                                     <button type="submit" class="btn btn-outline-success btn-sm" onclick="window.location.href='{{this.title}}/viewResults'">
-                                        Check <i class="fa fa-chevron-right"></i>
+                                        View <i class="fa fa-chevron-right"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -73,17 +73,20 @@
                     <table class="table table-sm text-center" style="width:400px;">
                         <tbody>
                             <tr>
-                                <td colspan="4">{{this.title}}  20/09/20  12:00 </td>
+                                <td colspan="4">{{this.title}}</td>
                             </tr>
                             <tr>
                                 <td>Dept</td>
                                 <td>Marks</td>
                                 <td>Questions</td>
                                 <td rowspan="2" style="padding: 25px 25px 25px 25px">
+                                    <button type="submit" class="btn btn-outline-success btn-sm" onclick="window.location.href='{{this.title}}/viewResults'">
+                                        View Submissions <i class="fa fa-chevron-right"></i>
+                                    </button><br><br>
                                     <button type="submit" class="btn btn-outline-primary btn-sm" onclick="window.location.href='/faculty/{{this.title}}/view'">
                                         Check <i class="fa fa-chevron-right"></i>
                                     </button><br><br>
-                                    <button type="submit" class="btn btn-outline-primary btn-sm" onclick="window.location.href='/faculty/{{this.title}}/close'">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="window.location.href='/faculty/{{this.title}}/close'">
                                         Close <i class="fa fa-chevron-right"></i>
                                     </button>
                                 </td>

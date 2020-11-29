@@ -95,7 +95,7 @@ app.get('/delCase/:_id', testCase.delete);
 var results = require('../middleware/resultsController');
 app.get('/:title/viewResults', ensureAuthenticated, results.total);
 
-app.get('/:title/:name', ensureAuthenticated, results.getResults);
+app.get('/:title/view/:name', ensureAuthenticated, results.getResults);
 
 //Tests
 app.get('/createTest', ensureAuthenticated, (req, res) => {

@@ -140,10 +140,17 @@ module.exports.total = (req, res) => {
       }
       const db = client.db(dbName);
       const col = db.collection(Title);
+      const userCol = db.collection('users');
+
+      let studentsC = 0;
+      userCol.find({role: 'student'}).toArray((err, studs) => {
+        studentsC = studs.length;
+      })
+
 
       col.find().toArray((err, results) => {
         const unique = [...new Set(results.map(item => item.name))];
-        res.render('resultF.hbs', {username: req.user.fullName, title: Title, count: unique.length, subs: unique})
+        res.render('resultF.hbs', {username: req.user.fullName, title: Title, count: unique.length, studC: studentsC, subs: unique})
       });
     });
 };
